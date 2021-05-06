@@ -1,4 +1,4 @@
-from Segmentation.utils.data_loader import create_OAI_dataset
+from Segmentation.utils.create_dataset import create_OAI_dataset
 import os
 
 def create_tfrecords(folder="train", use_2d=False, crop_size=None, mid_folders=""):
@@ -20,5 +20,5 @@ def create_tfrecords(folder="train", use_2d=False, crop_size=None, mid_folders="
                        crop_size=crop_size)
     
 if __name__ == "__main__":
-    # create_tfrecords("train", mid_folders='/mnt')
-    create_tfrecords("valid", mid_folders='/mnt')
+    create_tfrecords("train", mid_folders='/mnt', use_2d=True)
+    create_tfrecords("valid", mid_folders='/mnt', use_2d=True)

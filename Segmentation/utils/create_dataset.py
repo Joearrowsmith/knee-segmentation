@@ -1,5 +1,5 @@
 import tensorflow as tf
-import glob
+from glob import glob
 import h5py
 import os
 import numpy as np
