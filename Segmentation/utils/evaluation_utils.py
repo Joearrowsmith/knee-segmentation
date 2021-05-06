@@ -10,12 +10,11 @@ from pathlib import Path
 import os
 import datetime
 
-from Segmentation.utils.losses import dice_coef
 from Segmentation.plotting.voxels import plot_volume
 # from Segmentation.utils.data_loader import read_tfrecord_2d
 from Segmentation.utils.training_utils import visualise_binary, visualise_multi_class
 from Segmentation.utils.evaluation_metrics import get_confusion_matrix, plot_confusion_matrix, iou_loss_eval, dice_coef_eval
-from Segmentation.utils.losses import dice_coef, iou_loss
+from Segmentation.utils.metrics import dice_coef, IoU
 
 def get_depth(conc):
     depth = 0
@@ -24,7 +23,7 @@ def get_depth(conc):
     return depth
 
 
-def get_all_weights(bucket_name, logdir, tpu_name, visual_file, weights_dir):
+def get_bucket_weights(bucket_name, logdir, tpu_name, visual_file, weights_dir):
     """ Load the checkpoints in the specified log directory """
 
     ######################
@@ -83,7 +82,7 @@ def get_all_weights(bucket_name, logdir, tpu_name, visual_file, weights_dir):
 
     # """
 
-    # session_weights = get_all_weights(bucket_name, logdir, tpu_name, visual_file, weights_dir)
+    # session_weights = get_bucket_weights(bucket_name, logdir, tpu_name, visual_file, weights_dir)
 
     # # Only use part of dataset
     # idx_vol= 0 # how many numpies have been save
@@ -249,7 +248,7 @@ def get_all_weights(bucket_name, logdir, tpu_name, visual_file, weights_dir):
     #                         use_RGB=False)
 
     # # load the checkpoints in the specified log directory
-    # session_weights = get_all_weights(bucket_name, logdir, tpu_name, visual_file, weights_dir)
+    # session_weights = get_bucket_weights(bucket_name, logdir, tpu_name, visual_file, weights_dir)
 
     # #figure for gif
     # fig, ax = plt.subplots()
@@ -335,7 +334,7 @@ def get_all_weights(bucket_name, logdir, tpu_name, visual_file, weights_dir):
     #                         use_RGB=False)
 
     # # load the checkpoints in the specified log directory
-    # session_weights = get_all_weights(bucket_name, logdir, tpu_name, visual_file, weights_dir)
+    # session_weights = get_bucket_weights(bucket_name, logdir, tpu_name, visual_file, weights_dir)
 
     # #figure for gif
     # fig, ax = plt.subplots()
@@ -418,7 +417,7 @@ def get_all_weights(bucket_name, logdir, tpu_name, visual_file, weights_dir):
     #                         use_RGB=False)
 
     # # load the checkpoints in the specified log directory
-    # session_weights = get_all_weights(bucket_name, logdir, tpu_name, visual_file, weights_dir)
+    # session_weights = get_bucket_weights(bucket_name, logdir, tpu_name, visual_file, weights_dir)
 
     # #figure for gif
     # fig, axes = plt.subplots(1, 3)
@@ -561,7 +560,7 @@ def pred_evolution_gif(fig,
     #                         use_RGB=False)
 
     # # load the checkpoints in the specified log directory
-    # session_weights = get_all_weights(bucket_name, logdir, tpu_name, visual_file, weights_dir)
+    # session_weights = get_bucket_weights(bucket_name, logdir, tpu_name, visual_file, weights_dir)
 
     # #figure for gif
     # fig, axes = plt.subplots(1, 3)
@@ -999,7 +998,7 @@ def eval_loop(dataset, validation_steps, aug_strategy,
     gif_dir=''
 
     # load the checkpoints in the specified log directory
-    session_weights = get_all_weights(bucket_name, logdir, tpu_name, visual_file, weights_dir)
+    session_weights = get_bucket_weights(bucket_name, logdir, tpu_name, visual_file, weights_dir)
     last_epoch = len(session_weights)
 
     # trained_model.load_weights(weights_dir).expect_partial()

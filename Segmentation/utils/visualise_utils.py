@@ -3,13 +3,22 @@
 """
 import numpy as np
 import matplotlib.pyplot as plt
+import tensorflow as tf
+from Segmentation.train.reshape import get_mid_slice, get_mid_vol
 
-
-### train model loop
-def visualise_sample(x, y, pred, 
-                    num_to_visualise,
-                    slice_writer, vol_writer, 
-                    use_2d, epoch, multi_class, predict_slice, is_training):
+# ## train model loop
+def visualise_sample(x,
+                     y,
+                     pred,
+                     num_to_visualise,
+                     slice_writer,
+                     vol_writer,
+                     use_2d,
+                     epoch,
+                     multi_class,
+                     predict_slice,
+                     is_training):
+                     
     img = get_mid_slice(x.values[0], y.values[0], pred.values[0], multi_class)
     session_type = "Train" if is_training else "Validation"
     with slice_writer.as_default():
@@ -38,9 +47,8 @@ def plot_imgs(images_arr, img_plt_names, plt_supertitle, save_fig_name, color_ma
 
     for i in rows:
         for j in cols:
-            axes[i, j].imshow(images_arr[i,j], cmap=color_map)
-            axes[i, j].set_title(img_plt_names[i*cols+j], cmap=color_map)
-
+            axes[i, j].imshow(images_arr[i, j], cmap=color_map)
+            axes[i, j].set_title(img_plt_names[i * cols + j], cmap=color_map)
 
     for a in axes:
         for ax in a:

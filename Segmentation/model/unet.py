@@ -13,11 +13,11 @@ class UNet(tf.keras.Model):
     def __init__(self,
                  num_channels,
                  num_classes,
-                 use_2d=True,
+                 use_2d,
                  backbone_name='default',
                  num_conv_layers=2,
                  kernel_size=3,
-                 nonlinearity='relu',
+                 activation='relu',
                  use_attention=False,
                  use_batchnorm=True,
                  use_bias=True,
@@ -40,7 +40,7 @@ class UNet(tf.keras.Model):
                                                         use_2d=use_2d,
                                                         num_conv_layers=num_conv_layers,
                                                         kernel_size=kernel_size,
-                                                        nonlinearity=nonlinearity,
+                                                        activation=activation,
                                                         use_batchnorm=use_batchnorm,
                                                         use_bias=use_bias,
                                                         use_dropout=use_dropout,
@@ -58,13 +58,13 @@ class UNet(tf.keras.Model):
             encoder.freeze_pretrained_layers()
             self.backbone = encoder.construct_backbone()
 
-        n = len(self.num_channels) - 2
+        n = len(num_channels) - 2
         for i in range(n, -1, -1):
             output = num_channels[i]
             self.upsampling_path.append(Up_Conv(output,
                                                 use_2d=use_2d,
                                                 kernel_size=2,
-                                                nonlinearity=nonlinearity,
+                                                activation=activation,
                                                 use_attention=use_attention,
                                                 use_batchnorm=use_batchnorm,
                                                 use_transpose=False,
@@ -121,7 +121,7 @@ class R2_UNet(tf.keras.Model):
                  use_2d=True,
                  num_conv_layers=2,
                  kernel_size=3,
-                 nonlinearity='relu',
+                 activation='relu',
                  t=2,
                  use_attention=False,
                  use_batchnorm=True,
@@ -139,7 +139,7 @@ class R2_UNet(tf.keras.Model):
             self.contracting_path.append(Recurrent_ResConv_block(num_channels=output,
                                                                  use_2d=use_2d,
                                                                  kernel_size=kernel_size,
-                                                                 nonlinearity=nonlinearity,
+                                                                 activation=activation,
                                                                  padding='same',
                                                                  strides=1,
                                                                  t=t,
@@ -157,7 +157,7 @@ class R2_UNet(tf.keras.Model):
             up_conv = Up_Conv(output,
                               use_2d,
                               kernel_size=2,
-                              nonlinearity=nonlinearity,
+                              activation=activation,
                               use_attention=use_attention,
                               use_batchnorm=use_batchnorm,
                               use_transpose=False,
@@ -169,7 +169,7 @@ class R2_UNet(tf.keras.Model):
             up_conv.conv_block = Recurrent_ResConv_block(num_channels=output,
                                                          use_2d=use_2d,
                                                          kernel_size=kernel_size,
-                                                         nonlinearity=nonlinearity,
+                                                         activation=activation,
                                                          padding='same',
                                                          strides=1,
                                                          t=t,
@@ -218,7 +218,7 @@ class Nested_UNet(tf.keras.Model):
                  use_2d=True,
                  num_conv_layers=2,
                  kernel_size=(3, 3),
-                 nonlinearity='relu',
+                 activation='relu',
                  use_batchnorm=True,
                  use_bias=True,
                  data_format='channels_last',
@@ -240,7 +240,7 @@ class Nested_UNet(tf.keras.Model):
                                                    use_2d=use_2d,
                                                    num_conv_layers=num_conv_layers,
                                                    kernel_size=kernel_size,
-                                                   nonlinearity=nonlinearity,
+                                                   activation=activation,
                                                    use_batchnorm=use_batchnorm,
                                                    use_bias=use_bias,
                                                    data_format=data_format))
@@ -250,13 +250,13 @@ class Nested_UNet(tf.keras.Model):
         if use_2d:
             self.conv_1x1 = tfkl.Conv2D(num_classes,
                                         (1, 1),
-                                        activation='sigmoid' if self.num_classes == 1 else 'softmax',
+                                        activation='sigmoid' if num_classes == 1 else 'softmax',
                                         padding='same',
                                         data_format=data_format)
         else:
             self.conv_1x1 = tfkl.Conv3D(num_classes,
                                         (1, 1, 1),
-                                        activation='sigmoid' if self.num_classes == 1 else 'softmax',
+                                        activation='sigmoid' if num_classes == 1 else 'softmax',
                                         padding='same',
                                         data_format=data_format)
 
@@ -295,13 +295,13 @@ class Nested_UNet_v2(tf.keras.Model):
                  use_2d=True,
                  num_conv_layers=2,
                  kernel_size=(3, 3),
-                 nonlinearity='relu',
+                 activation='relu',
                  use_batchnorm=True,
                  use_bias=True,
                  data_format='channels_last',
                  **kwargs):
 
-        super(Nested_UNet, self).__init__(**kwargs)
+        super(Nested_UNet_v2, self).__init__(**kwargs)
 
         self.conv_block_lists = []
         self.pool = tfkl.MaxPooling2D() if use_2d else tfkl.MaxPooling3D()
@@ -317,7 +317,7 @@ class Nested_UNet_v2(tf.keras.Model):
                                                    use_2d=use_2d,
                                                    num_conv_layers=num_conv_layers,
                                                    kernel_size=kernel_size,
-                                                   nonlinearity=nonlinearity,
+                                                   activation=activation,
                                                    use_batchnorm=use_batchnorm,
                                                    use_bias=use_bias,
                                                    data_format=data_format))
@@ -327,13 +327,13 @@ class Nested_UNet_v2(tf.keras.Model):
         if use_2d:
             self.conv_1x1 = tfkl.Conv2D(num_classes,
                                         (1, 1),
-                                        activation='sigmoid' if self.num_classes == 1 else 'softmax',
+                                        activation='sigmoid' if num_classes == 1 else 'softmax',
                                         padding='same',
                                         data_format=data_format)
         else:
             self.conv_1x1 = tfkl.Conv3D(num_classes,
                                         (1, 1, 1),
-                                        activation='sigmoid' if self.num_classes == 1 else 'softmax',
+                                        activation='sigmoid' if num_classes == 1 else 'softmax',
                                         padding='same',
                                         data_format=data_format)
 

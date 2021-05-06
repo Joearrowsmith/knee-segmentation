@@ -1,5 +1,5 @@
 import tensorflow as tf
-# import tensorflow.keras.backend as K
+import tensorflow.keras.backend as K
 import matplotlib.pyplot as plt
 import math
 import numpy as np
@@ -107,28 +107,19 @@ def label2color(img):
             img_color[row, col] = np.array(colour_maps[label])
     return img_color
 
-
-def make_lr_scheduler(init_lr):
-
-    def step_decay(epoch):
-        drop = 0.8
-        epochs_drop = 1.0
-        lrate = init_lr * math.pow(drop, math.floor((1 + epoch) / epochs_drop))
-        return lrate
-    return tf.keras.callbacks.LearningRateScheduler(step_decay)
-
-
 class LearningRateSchedule(tf.keras.optimizers.schedules.LearningRateSchedule):
 
     def __init__(self,
                  steps_per_epoch,
                  initial_learning_rate,
+                 min_learning_rate,
                  drop,
                  epochs_drop,
                  warmup_epochs):
         super(LearningRateSchedule, self).__init__()
         self.steps_per_epoch = steps_per_epoch
         self.initial_learning_rate = initial_learning_rate
+        self.min_learning_rate = min_learning_rate
         self.drop = drop
         self.epochs_drop = epochs_drop
         self.warmup_epochs = warmup_epochs
@@ -142,10 +133,17 @@ class LearningRateSchedule(tf.keras.optimizers.schedules.LearningRateSchedule):
         for index, start_epoch in enumerate(epochs_drop):
             lrate = tf.where(
                 lr_epoch >= start_epoch,
-                self.initial_learning_rate * self.drop**index,
+                self.update_lr(index, self.min_learning_rate),
                 lrate)
-
         return lrate
+    
+    def update_lr(self, idx, min_lr):
+        
+        new_lr = self.initial_learning_rate * self.drop**idx
+        if new_lr <  min_lr:
+            new_lr = min_lr
+
+        return new_lr
 
     def get_config(self):
         return {

@@ -14,6 +14,10 @@ RUN pip install pytest
 RUN pip install matplotlib
 RUN pip install flake8
 RUN pip install jupyterlab
+<<<<<<< HEAD
+=======
+RUN pip install glob2
+>>>>>>> 264fb92740314ab69e0bf0bd1c057ebe22ff4ac5
 
 RUN apt-get update
 RUN apt-get install -y tmux
