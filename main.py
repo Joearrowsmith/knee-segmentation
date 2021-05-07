@@ -9,13 +9,13 @@ from absl import logging
 
 from Segmentation.utils.accelerator import setup_accelerator
 from Segmentation.utils.data_loader import load_dataset
-from Segmentation.utils.cloud_utils import upload_blob
 from Segmentation.utils.training_utils import LearningRateSchedule, visualise_multi_class
 from Segmentation.utils.losses import dice_coef_loss, tversky_loss, focal_tversky, multi_class_dice_coef_loss
 from Segmentation.utils.metrics import dice_coef, DiceMetrics, dice_coef_eval
 
-from flags import FLAGS
 from select_model import select_model
+
+from flags import FLAGS
 
 def main(argv):
 
@@ -138,7 +138,9 @@ def main(argv):
             flag_name = os.path.join(logdir, 'train_flags.cfg')
             logging.info('Saving flags into the following directory: {}'.format(local_flag_name))
             FLAGS.append_flags_into_file(local_flag_name)
-            upload_blob(FLAGS.bucket, local_flag_name, flag_name)
+            if FLAGS.use_cloud:
+                from Segmentation.utils.cloud_utils import upload_blob
+                upload_blob(FLAGS.bucket, local_flag_name, flag_name)
             
         if FLAGS.save_tb:
             logging.info('Saving training logs in Tensorboard save at the following directory: {}'.format(logdir))

@@ -4,13 +4,13 @@ from absl import flags
 flags.DEFINE_string('dataset', 'oai_challenge', 'Dataset: oai_challenge, isic_2018 or oai_full')
 flags.DEFINE_bool('use_2d', True, 'True to train on 2D slices, False to train on 3D data')
 flags.DEFINE_integer('buffer_size', 19200, 'shuffle buffer size')
-flags.DEFINE_string('tfrec_dir', 'gs://oai-ml-dataset/tfrecords/', 'directory for TFRecords folder')
+flags.DEFINE_string('tfrec_dir', 'Data/mnt/tfrecords', 'directory for TFRecords folder')
 
 # Training options
 flags.DEFINE_integer('seed', None, 'Random seed. If not fixed, set to None')
 flags.DEFINE_bool('train', True, 'If True (Default), train the model. Otherwise, test the model')
 flags.DEFINE_enum('loss', 'tversky', ['tversky', 'dice', 'focal_tversky'], 'Loss functions')
-flags.DEFINE_integer('batch_size', 16, 'Batch size per TPU Core / GPU')
+flags.DEFINE_integer('batch_size', 1, 'Batch size per TPU Core / GPU')
 flags.DEFINE_float('base_learning_rate', 6.4e-04, 'base learning rate at the start of training session')
 flags.DEFINE_float('min_learning_rate', 1e-09, 'minimum learning rate')
 flags.DEFINE_integer('lr_warmup_epochs', 0, 'No. of epochs for a warmup to the base_learning_rate. 0 for no warmup')
@@ -37,7 +37,7 @@ flags.DEFINE_enum('optimizer', 'adam', ['adam', 'rmsprop', 'sgd', 'adamw'], 'Whi
 
 # UNet parameters
 flags.DEFINE_list('num_filters', [64, 128, 256, 512, 1024], 'number of filters in the model')
-flags.DEFINE_integer('num_conv', 2, 'number of convolution layers in each block')
+flags.DEFINE_integer('num_conv', 1, 'number of convolution layers in each block')
 flags.DEFINE_string('backbone_architecture', 'default', 'default, vgg16, vgg19, resnet50, resnet101, resnet152.')
 flags.DEFINE_bool('use_transpose', False, 'Whether to use transposed convolution or upsampling + convolution')
 flags.DEFINE_bool('use_attention', False, 'Whether to use attention mechanism')
@@ -69,7 +69,8 @@ flags.DEFINE_list('num_channels_UpConv', [512, 256, 128], 'Number of filters for
 flags.DEFINE_integer('kernel_size_UpConv', 3, 'Kernel size for the upsampling convolutions')
 
 # Logging, saving and testing options
-flags.DEFINE_string('logdir', 'gs://oai-ml-dataset/checkpoints/', 'directory for checkpoints and tensoboard files')
+flags.DEFINE_bool('use_cloud', False, 'True to connect with gcloud')
+flags.DEFINE_string('logdir', 'Data/mnt/checkpoints/', 'directory for checkpoints and tensoboard files')
 flags.DEFINE_bool('save_weights', False, 'Whether to save weights')
 flags.DEFINE_bool('save_tb', False, 'Whether to log results into Tensorboard')
 flags.DEFINE_string('weights_dir', 'checkpoints', 'directory for saved model or weights. Only used if save_weights is False')
@@ -88,7 +89,7 @@ flags.DEFINE_string('tpu_dir', None, 'If loading visual file from a tpu other th
 flags.DEFINE_string('which_representation', None, 'Whether to do epoch gif ("epoch") or volume gif ("volume") or "slice"')
 
 # Accelerator flags
-flags.DEFINE_bool('use_gpu', False, 'Whether to run on GPU or otherwise TPU.')
+flags.DEFINE_bool('use_gpu', True, 'Whether to run on GPU or otherwise TPU.')
 flags.DEFINE_bool('use_bfloat16', False, 'Whether to use mixed precision.')
 flags.DEFINE_integer('num_cores', 8, 'Number of TPU cores or number of GPUs.')
 flags.DEFINE_string('tpu', 'oai-tpu', 'Name of the TPU. Only used if use_gpu is False.')
